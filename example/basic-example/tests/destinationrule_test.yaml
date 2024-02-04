@@ -1,0 +1,60 @@
+suite: test destination rule
+templates:
+  - charts/your-app/templates/app.yaml
+tests:
+  - it: should do basic template properly
+    documentIndex: 1 # find the dr manifest, in this case its the 2nd generated
+    asserts:
+      - isKind:
+          of: DestinationRule
+      - equal:
+          path: metadata.name
+          value: your-app
+  - it: should have correct labels
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: metadata.labels.owner
+          value: ml
+      - equal:
+          path: metadata.labels.release
+          value: latest
+      - equal:
+          path: metadata.labels.product
+          value: your-app
+      - equal:
+          path: metadata.labels.type
+          value: application
+      - equal:
+          path: metadata.labels.gitlab_project
+          value: "your-app"
+      - equal:
+          path: metadata.labels.deploy_name
+          value: va-your-app
+      - equal:
+          path: metadata.labels.app
+          value: your-app
+      - equal:
+          path: metadata.labels.istio-injection
+          value: enabled
+  - it: should have correct svc host
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.host
+          value: your-app-svc
+  - it: should have correct subsets
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.subsets[0].name
+          value: v1
+      - equal:
+          path: spec.subsets[0].labels.version
+          value: v1
+      - equal:
+          path: spec.subsets[1].name
+          value: v2
+      - equal:
+          path: spec.subsets[1].labels.version
+          value: v2

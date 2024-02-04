@@ -1,0 +1,33 @@
+---
+{{- if .Values.autoscaling.enabled }}
+{{ include "common.hpa" . }}
+---
+{{- end }}
+{{- if .Values.frontend.enabled }}
+{{ include "common.frontendDeployment" . }}
+---
+{{ include "common.frontendService" . }}
+---
+{{- end }}
+{{- if .Values.backend.enabled }}
+{{ include "common.backendDeployment" . }}
+---
+{{ include "common.backendService" . }}
+---
+{{- end }}
+{{- if .Values.environment.variables }}
+{{ include "common.configmap" . }}
+---
+{{- end }}
+{{- if .Values.serviceAccount.enabled }}
+{{ include "common.serviceAccount" . }}
+---
+{{- end }}
+{{- if .Values.certManager.enabled }}
+{{ include "common.certManager" . }}
+---
+{{- end }}
+{{- if .Values.database.enabled }}
+{{ include "common.database" . }}
+---
+{{- end }}

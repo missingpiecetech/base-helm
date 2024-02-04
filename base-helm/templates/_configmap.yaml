@@ -1,0 +1,12 @@
+{{- define "common.configmap" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+{{- range $entry := .Values.environment.variables }}
+  {{ $entry.name }}: "{{ $entry.value }}"
+{{- end -}}
+{{- end -}}

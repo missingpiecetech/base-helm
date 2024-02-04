@@ -1,0 +1,30 @@
+your-app:
+  tags:
+    gitlabProject: "your-app"
+    owner: ml
+
+  settings:
+    isGrpcApp: true
+    hosts:
+      - "your-app.dev.24mm.io"
+
+  deployment:
+    serviceAccount: "p21-embedded-app-aws-permissions-serviceaccount"
+
+    # This is for testing, normally you'd want to leave these out
+    livenessProbe:
+      delay: 10
+    readinessProbe:
+      delay: 10
+
+  secret:
+    enabled: true
+    vaultPath: inno/kv/data/creds/common/kimberlite
+    entries:
+      - name: SHARED_DOCKER_REGISTRY
+
+  gateways:
+    enabled: true
+
+  appsEnabled:
+    datadog: false

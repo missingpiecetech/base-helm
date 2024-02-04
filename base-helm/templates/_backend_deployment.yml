@@ -1,0 +1,53 @@
+{{- define "common.backendDeployment" -}}
+{{- if not or (.Values.imageRepository .Values.backend.image.repository) -}}
+{{- fail ".Values.imageRepository or .Values.backend.image.repository must be defined" -}}
+{{- end -}}
+{{- $name := .Values.backend.name | default .Chart.Name -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "base-helm.fullname" . }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name | default .Chart.Name }}
+      containers:
+        - name: {{ .Values.backend.image.name | default $name }}
+          image: "gcr.io/influenx-ai-development/influenx-backend:f3b1bc543d12984920c7644c1d64e0aa4b024de7"
+          ports:
+            - containerPort: 3001
+          {{- if .Values.environment.variables }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Chart.Name }}
+          {{- end }}
+          {{- if .Values.database.enabled }}
+          env:
+            - name: "POSTGRES_HOSTNAME"
+              value: {{ .Values.database.host }}
+            - name: "POSTGRES_PORT"
+              value: {{ .Values.database.port }}
+            - name: "POSTGRES_USER"
+              value: {{ .Values.database.user }}
+            - name: "POSTGRES_PASSWORD"
+              value: "postgres"
+            - name: "POSTGRES_DB_NAME"
+              value: "influenx"
+          {{- end -}}
+          resources:
+            limits:
+              cpu: {{ .Values.backend.resources.limitCPU }}
+              memory: {{ .Values.backend.resources.limitMemory }}
+            requests:
+              cpu: {{ .Values.backend.resources.cpu }}
+              memory: {{ .Values.backend.resources.memory }}
+{{- end -}}

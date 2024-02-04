@@ -1,3 +1,5 @@
+{{- define "common.certManager" -}}
+{{- $name := .Values.certManager.name | default .Chart.Name -}}
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
@@ -29,12 +31,4 @@ spec:
       - http01:
           ingress:
             name: influenx-frontend-ingress
-# ---
-# apiVersion: v1
-# kind: Secret
-# metadata:
-#   name: web-ssl
-# type: kubernetes.io/tls
-# stringData:
-#   tls.key: ""
-#   tls.crt: ""
+{{- end -}}

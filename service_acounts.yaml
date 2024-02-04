@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: influenx-dev-sa
-  namespace: development
-imagePullSecrets:
-  - name: gcr-json-key

@@ -1,40 +1,40 @@
+{{- define "common.database" -}}
+{{- $name := .Values.database.name | default .Chart.Name -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "base-helm.fullname" . }}
+  name: {{ include "base-helm.fullname" . }}-db
   labels:
-    {{- include "base-helm.labels" . | nindent 4 }}
+    {{- include "common.labels" . | nindent 4 }}
 spec:
   storageClassName: standard-rwo
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: {{ .Values.database.storage }}
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: influenx-dev-db
-  namespace: development
+  name: {{ include "base-helm.fullname" . }}-db
   labels:
-    project: influenx-dev
+    {{- include "common.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      app: influenx-db
+      app: {{ include "base-helm.fullname" . }}-db
   replicas: 1
   template:
     metadata:
       labels:
-        project: influenx-dev
-        app: influenx-db
+        {{- include "common.labels" . | nindent 8 }}
     spec:
       volumes:
-        - name: influenx-db-pv-volume
+        - name: {{ include "base-helm.fullname" . }}-db
           persistentVolumeClaim:
-            claimName: influenx-db-pvc
+            claimName: {{ include "base-helm.fullname" . }}-db
       containers:
         - name: develop
           image: postgres:latest
@@ -44,7 +44,7 @@ spec:
             requests:
               memory: "1Gi"
           volumeMounts:
-            - name: influenx-db-pv-volume
+            - name: {{ include "base-helm.fullname" . }}-db-pv-volume
               mountPath: "/var/lib/postgresql/data"
           env:
             - name: POSTGRES_USER
@@ -58,15 +58,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: influenx-dev-db
-  namespace: development
+  name: {{ include "base-helm.fullname" . }}-db
   labels:
-    project: influenx-dev
-    app: influenx-db
+    {{- include "common.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
     - port: 5432
       targetPort: 5432
   selector:
-    app: influenx-db
+    app: {{ include "base-helm.fullname" . }}-db
+{{- end -}}

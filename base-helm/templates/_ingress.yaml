@@ -1,0 +1,43 @@
+{{- define "common.ingress" -}}
+{{- if not .Values.host -}}
+{{- fail ".Values.host must be defined" -}}
+{{- end -}}
+{{- $name := .Values.ingress.name | default .Chart.Name -}}
+{{- $frontendName := .Values.frontend.name | default .Chart.Name -}}
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: {{ $name }}
+spec:
+  redirectToHttps:
+    enabled: true
+    responseCodeName: MOVED_PERMANENTLY_DEFAULT
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "{{ $name }}-ip"
+    kubernetes.io/ingress.class: gce
+    networking.gke.io/v1beta1.FrontendConfig: {{ $name }}
+    cert-manager.io/issuer: letsencrypt-production
+spec:
+  tls:
+    - secretName: web-ssl
+      hosts:
+        - {{ .Values.host }}
+  rules:
+    - host: {{ .Values.host }}
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: {{- .Values.ingress.service | default $frontendName -}}
+                port:
+                  number: {{ .Values.ingress.port | default .Values.frontend.port }}
+{{- end -}}
