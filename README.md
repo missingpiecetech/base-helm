@@ -6,7 +6,26 @@ missingpiecetech common chart to spin up GKE cluster with all needed resources
 
 ## Installing
 
-TODO for when we figure out how to do this with github
+[Helm](https://helm.sh) must be installed to use the charts.  Please refer to Helm's [documentation](https://helm.sh/docs)
+to get started.
+
+Once Helm has been set up correctly, add the repo as follows:
+```sh
+helm repo add base-helm https://missingpiecetech.github.io/base-helm
+```
+
+If you had already added this repo earlier, run `helm repo update` to retrieve the latest versions of the packages. You
+can then run `helm search repo base-helm` to see the charts.
+
+To install the `base-helm` chart:
+```sh
+helm install base-helm <my-name>/base-helm
+```
+
+To uninstall the chart:
+```sh
+helm delete <my-name>
+```
 
 ## Usage
 

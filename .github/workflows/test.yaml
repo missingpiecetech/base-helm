@@ -1,0 +1,34 @@
+name: Testing
+
+on: [push]
+
+jobs:
+  chart-example-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+      - name: Install helm-unittest
+        run: |
+          helm plugin install https://github.com/helm-unittest/helm-unittest.git
+      - name: test charts
+        run: |
+          make test
+  test-docs:
+    runs-on: ubuntu-latest
+    container:
+      image: jnorwood/helm-docs:latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: create docs
+        run: |
+          helm-docs -c ./base-helm -o ../README_TEST.md --template-files=../README.md.gotmpl
+      - name: Show files changed
+        run: cat ./README_TEST.md
+      - name: check there is no diff
+        run: |
+          if ! diff -q ./README_TEST.md ./README.md &>/dev/null; then \
+            echo "Looks like README.md hasn't been updated. Please run 'make docs' locally to update documentation" && \
+            exit 1; 
+          fi
