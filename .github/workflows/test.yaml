@@ -5,15 +5,13 @@ on: [push]
 jobs:
   chart-example-tests:
     runs-on: ubuntu-latest
-    container:
-      image: helmunittest/helm-unittest
     steps:
       - uses: actions/checkout@v3
-#      - name: Install Helm
-#        uses: azure/setup-helm@v3
-#      - name: Install helm-unittest
-#        run: |
-#          helm plugin install https://github.com/helm-unittest/helm-unittest.git
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+      - name: Install helm-unittest
+        run: |
+          helm plugin install https://github.com/helm-unittest/helm-unittest.git
       - name: test charts
         run: |
           make test
@@ -26,6 +24,8 @@ jobs:
       - name: create docs
         run: |
           helm-docs -c ./base-helm -o ./README_TEST.md --template-files=./README.md.gotmp
+      - name: Show files changed
+        run: cat ./README_TEST.md
       - name: check there is no diff
         run: |
           if ! diff -q ./README_TEST.md ./README.md &>/dev/null; then \
