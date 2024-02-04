@@ -1,0 +1,78 @@
+{{ template "chart.versionBadge" . }}
+
+{{ template "chart.header" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+## Installing
+
+TODO for when we figure out how to do this with github
+
+## Usage
+
+Information on more complex usage scenarios. For filling out values, see README below.
+
+### Making Multi Charts with Alias
+
+### What is `.Chart.Name`?
+
+We use the name of the chart as a default value in many instances to keep things simple. If you see `.Chart.Name`
+as a default in the values that just means we're grabbing the chart name using [helm's chart object](https://helm.sh/docs/chart_template_guide/builtin_objects/).
+
+### Setting the Image Tag
+
+If you are deploying your app to a development namespace, argo will automatically update your image tag to `:master-$SHA`.
+If you are in a non development repo, we usually cut a tag and set it explicitly in argo, so argo will use `:$TAG`.
+
+This is all done by setting `.Values.global.imageTag`. If you DO NOT want this to happen, simply set the tag explicitly
+in `.Values.serviceContainer.image.tag`, however it is not recommended.
+
+{{ template "chart.valuesSection" . }}
+
+## Development
+
+### Editing the README
+
+Because we're using an automatic doc generator, you need to **update `README.md.gotmpl` not `README.md` directly!!**. This
+will then be picked up by `helm-docs` to make changes.
+
+To generate changes manually please run `make docs`
+
+### Setting up pre-hook
+
+To start developing, first [download pre-commit](https://pre-commit.com/) to get the docs pre-commit hook working, if this
+goes as expect pre-commit will automatically fix the docs for you before commit.
+
+### Testing
+
+We use [helm unittest] to test the common chart. Right now there are two test charts that both live in the `example` dir:
+`single-chart-example` and `multi-chart-example`. All tests are found under `tests`.
+
+The single chart is for testing simple, default charts used by ML or quick charts for other use cases. The multi chart
+tests are for testing complicated setups like those in p21-embedded, eu, va-lexi, etc.
+
+For documentation on testing see the [unittest documentation here](https://github.com/helm-unittest/helm-unittest/blob/main/DOCUMENT.md).
+
+To run the tests, use `make tests`.
+
+#### Gotchas
+
+The biggest testing gotcha is that we use one large `app.yaml` to generate our manifests, which makes it slightly difficult.
+To make sure you reference the right manifest, use `documentIndex` and the number of the resulting yaml that appears in `app.yaml`.
+
+For instance:
+
+```yaml
+  - it: should do basic template properly
+    documentIndex: 0 # find the vs manifest, in this case its the 1st generated
+    asserts:
+      - isKind:
+          of: VirtualService
+      - equal:
+          path: metadata.name
+          value: your_app-svc
+```
+
+grabs the first generated manifest from `app.yaml`. In this case its the VirtualService yaml.

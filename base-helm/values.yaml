@@ -1,14 +1,29 @@
+# Default values for common chart.
+
+# -- GCR image repo to pull from for all deployments in this chart. Frontend and backend deployments can be overridden
+# under their settings
 imageRepository: ""
+# -- External host to use for app
 host: ""
 
 backend:
+  # -- Turn this on to create a backend deployment resource. Most likely you want this ON
   enabled: true
+  # -- Can overwrite backend deployment name. Defaults to chart name
+  # @default -- `{{ .Chart.Name }}`
   name: ""
+  # -- Backend image port
   port: 80
+  # -- Backend external port
   targetPort: 3001
   image:
+    # -- Can overwrite image name. Defaults to chart name
+    # @default -- `{{ .Chart.Name }}`
     name: ""
+    # -- Can overwrite backend image repository. Defaults to .Values.imageRepository
+    # @default -- `.Values.imageRepository`
     repository: ""
+    # -- The tag of the image. This will most likely need to be overridden at runtime.
     tag: "latest"
   resources:
     # -- Memory for pods
@@ -21,13 +36,23 @@ backend:
     limitCPU: "300m"
 
 frontend:
+  # -- Turn this on to create a frontend deployment resource
   enabled: true
+  # -- Can overwrite backend deployment name. Defaults to chart name
+  # @default -- `{{ .Chart.Name }}`
   name: ""
+  # -- Frontend image port
   port: 80
+  # -- Frontend external port
   targetPort: 3000
   image:
+    # -- Can overwrite image name. Defaults to chart name
+    # @default -- `{{ .Chart.Name }}`
     name: ""
+    # -- Can overwrite frontend image repository. Defaults to .Values.imageRepository
+    # @default -- `.Values.imageRepository`
     repository: ""
+    # -- The tag of the image. This will most likely need to be overridden at runtime.
     tag: "latest"
   resources:
     # -- Memory for pods
@@ -40,17 +65,25 @@ frontend:
     limitCPU: "300m"
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Turn this on to create a serviceAccount resource. Most likely you want this ON
   enabled: true
-  # If not set and create is true, a name is generated using the fullname template
+  # -- Can overwrite serviceAccount name. Defaults to chart name
+  # @default -- `{{ .Chart.Name }}`
   name: ""
+  # -- GCR secret used to authenticate and pull images from Google
   imagePullSecrets: gcr-json-key
 
 ingress:
+  # -- Turn this on to create a ingress resource. Most likely you want this ON
   enabled: true
+  # -- Can overwrite serviceAccount name. Defaults to chart name
+  # @default -- `{{ .Chart.Name }}`
   name: ""
+  # -- What service should this ingress point to? Defaults to the frontend service
+  # @default -- `{{ .frontend.name }}`
   service: ""
-  port: ""
+  # -- Port to expose
+  port: "80"
 
 database:
   enabled: true
@@ -62,10 +95,13 @@ database:
   password: "postgres"
   database_name: ""
 
+# TODO: Will need to flesh this out later
 certManager:
+  # -- Turn this on to create needed Issuer resources. Most likely you want this ON
   enabled: true
 
 environment:
+  # -- List of variables you want to use throughout the app. This will create a configmap that is pulled in to all deployments
   variables: []
   # Example of use
   #    - name: REPLAY_OPENSEARCH_ADDR

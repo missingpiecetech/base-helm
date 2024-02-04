@@ -7,7 +7,7 @@
 apiVersion: networking.gke.io/v1beta1
 kind: FrontendConfig
 metadata:
-  name: {{ $name }}
+  name: {{ $name }}-ssl-config
 spec:
   redirectToHttps:
     enabled: true
@@ -26,7 +26,7 @@ metadata:
     cert-manager.io/issuer: letsencrypt-production
 spec:
   tls:
-    - secretName: web-ssl
+    - secretName: {{ $name }}-ssl-config
       hosts:
         - {{ .Values.host }}
   rules:
