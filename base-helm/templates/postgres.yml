@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "base-helm.fullname" . }}
+  labels:
+    {{- include "base-helm.labels" . | nindent 4 }}
+spec:
+  storageClassName: standard-rwo
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influenx-dev-db
+  namespace: development
+  labels:
+    project: influenx-dev
+spec:
+  selector:
+    matchLabels:
+      app: influenx-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        project: influenx-dev
+        app: influenx-db
+    spec:
+      volumes:
+        - name: influenx-db-pv-volume
+          persistentVolumeClaim:
+            claimName: influenx-db-pvc
+      containers:
+        - name: develop
+          image: postgres:latest
+          ports:
+            - containerPort: 5432
+          resources:
+            requests:
+              memory: "1Gi"
+          volumeMounts:
+            - name: influenx-db-pv-volume
+              mountPath: "/var/lib/postgresql/data"
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: influenx-dev-db
+  namespace: development
+  labels:
+    project: influenx-dev
+    app: influenx-db
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: influenx-db

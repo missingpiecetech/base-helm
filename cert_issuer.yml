@@ -1,0 +1,40 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: jennifer@influenx.ai
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    solvers:
+      - http01:
+          ingress:
+            name: influenx-frontend-ingress
+
+---
+# issuer-lets-encrypt-production.yaml
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-production
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: jennifer@influenx.ai
+    privateKeySecretRef:
+      name: letsencrypt-production
+    solvers:
+      - http01:
+          ingress:
+            name: influenx-frontend-ingress
+# ---
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: web-ssl
+# type: kubernetes.io/tls
+# stringData:
+#   tls.key: ""
+#   tls.crt: ""

@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influenx-frontend
+  namespace: development
+  labels:
+    app: influenx-frontend
+    project: influenx-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influenx-frontend
+  template:
+    metadata:
+      labels:
+        app: influenx-frontend
+        project: influenx-dev
+    spec:
+      serviceAccountName: influenx-dev-sa
+      containers:
+        - name: influenx-frontend
+          image: "gcr.io/influenx-ai-development/influenx-frontend:f3b1bc543d12984920c7644c1d64e0aa4b024de7"
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          # env:
+          #   - name: "REACT_APP_API_ENDPOINT"
+          #     value: "https://app.influenx.ai/api"
+          #     # Auth0
+          #   - name: "AUTH0_CLIENT_ID"
+          #     value: "favFnBkLhMN8HWpN82Bh0KSWnceVRakk"
+          #   - name: "AUTH0_AUDIENCE"
+          #     value: "https://app.influenx.ai/api"
+          #   - name: "AUTH0_DOMAIN"
+          #     value: "dev-vkw0ktf17bm3dj1o.us.auth0.com"
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: influenx-frontend
+  namespace: development
+  labels:
+    app: influenx-frontend
+    project: influenx-dev
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 3000
+  selector:
+    app: influenx-frontend
+  type: NodePort
+
+# Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: influenx-frontend-ingress
+  namespace: development
+  labels:
+    app: influenx-frontend
+    project: influenx-dev
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "influenx-ip"
+    kubernetes.io/ingress.class: gce
+    networking.gke.io/v1beta1.FrontendConfig: influenx-ssl-config
+    cert-manager.io/issuer: letsencrypt-production
+spec:
+  tls:
+    - secretName: web-ssl
+      hosts:
+        - app.influenx.ai
+  rules:
+    - host: app.influenx.ai
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: influenx-frontend
+                port:
+                  number: 80
+
+---
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: influenx-ssl-config
+spec:
+  redirectToHttps:
+    enabled: true
+    responseCodeName: MOVED_PERMANENTLY_DEFAULT
