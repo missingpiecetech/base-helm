@@ -3,11 +3,13 @@
 {{- fail ".Values.host must be defined" -}}
 {{- end -}}
 {{- $name := .Values.ingress.name | default .Chart.Name -}}
-{{- $frontendName := .Values.frontend.name | default .Chart.Name -}}
+{{- $frontendName := .Values.frontend.name | default (print .Chart.Name "-frontend") -}}
 apiVersion: networking.gke.io/v1beta1
 kind: FrontendConfig
 metadata:
   name: {{ $name }}-ssl-config
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
 spec:
   redirectToHttps:
     enabled: true
@@ -22,7 +24,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.global-static-ip-name: "{{ $name }}-ip"
     kubernetes.io/ingress.class: gce
-    networking.gke.io/v1beta1.FrontendConfig: {{ $name }}
+    networking.gke.io/v1beta1.FrontendConfig: {{ $name }}-ssl-config
     cert-manager.io/issuer: letsencrypt-production
 spec:
   tls:
@@ -39,5 +41,5 @@ spec:
               service:
                 name: {{- .Values.ingress.service | default $frontendName -}}
                 port:
-                  number: {{ .Values.ingress.port | default .Values.frontend.port }}
+                  number: {{ .Values.frontend.port }}
 {{- end -}}

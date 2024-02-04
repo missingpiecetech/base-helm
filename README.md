@@ -36,10 +36,10 @@ TODO for when we have more information on how tag will be passed in
 | autoscaling.replicaCount | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | backend.enabled | bool | `true` | Turn this on to create a backend deployment resource. Most likely you want this ON |
-| backend.image.name | string | `{{ .Chart.Name }}` | Can overwrite image name. Defaults to chart name |
+| backend.image.name | string | `{{ .Chart.Name }}-backend` | Can overwrite image name. Defaults to chart name + "-backend" |
 | backend.image.repository | string | `.Values.imageRepository` | Can overwrite backend image repository. Defaults to .Values.imageRepository |
 | backend.image.tag | string | `"latest"` | The tag of the image. This will most likely need to be overridden at runtime. |
-| backend.name | string | `{{ .Chart.Name }}` | Can overwrite backend deployment name. Defaults to chart name |
+| backend.name | string | `{{ .Chart.Name }}-backend` | Can overwrite backend deployment name. Defaults to chart name+ "-backend" |
 | backend.port | int | `80` | Backend image port |
 | backend.resources.cpu | string | `"200m"` | CPU for pods |
 | backend.resources.limitCPU | string | `"300m"` | limitCPU for pods |
@@ -47,25 +47,27 @@ TODO for when we have more information on how tag will be passed in
 | backend.resources.memory | string | `"512Mi"` | Memory for pods |
 | backend.targetPort | int | `3001` | Backend external port |
 | certManager.enabled | bool | `true` | Turn this on to create needed Issuer resources. Most likely you want this ON |
-| database.database_name | string | `""` |  |
-| database.enabled | bool | `true` |  |
-| database.name | string | `""` |  |
-| database.password | string | `"postgres"` |  |
-| database.port | int | `5432` |  |
-| database.storage | string | `"20Gi"` |  |
-| database.user | string | `"postgres"` |  |
+| database.database_name | string | `{{ .Chart.Name }}-db` | Name of the database to be created |
+| database.enabled | bool | `true` | Turn this on to create a database resource. Right now this will only be postgres |
+| database.memory | string | `"1Gi"` | Database memory |
+| database.name | string | `{{ .Chart.Name }}-db` | Can overwrite serviceAccount name. Defaults to chart name + "-db" |
+| database.password | string | `"postgres"` | Password used to access the database |
+| database.port | int | `5432` | Port to expose. By default postgres uses 5432 |
+| database.replicas | int | `1` | Number of pod replicas |
+| database.storage | string | `"20Gi"` | Database storage |
+| database.user | string | `"postgres"` | Username used to access the database |
 | environment.secret | string | `""` | Set this to pull in a Secret to the deployment |
 | environment.variables | list | `[]` | List of variables you want to use throughout the app. This will create a configmap that is pulled in to all deployments |
 | frontend.enabled | bool | `true` | Turn this on to create a frontend deployment resource |
-| frontend.image.name | string | `{{ .Chart.Name }}` | Can overwrite image name. Defaults to chart name |
+| frontend.image.name | string | `{{ .Chart.Name }}-frontend` | Can overwrite image name. Defaults to chart name + "-frontend" |
 | frontend.image.repository | string | `.Values.imageRepository` | Can overwrite frontend image repository. Defaults to .Values.imageRepository |
 | frontend.image.tag | string | `"latest"` | The tag of the image. This will most likely need to be overridden at runtime. |
-| frontend.name | string | `{{ .Chart.Name }}` | Can overwrite backend deployment name. Defaults to chart name |
+| frontend.name | string | `{{ .Chart.Name }}-frontend` | Can overwrite backend deployment name. Defaults to chart name + "-frontend" |
 | frontend.port | int | `80` | Frontend image port |
-| frontend.resources.cpu | string | `"200m"` | CPU for pods |
-| frontend.resources.limitCPU | string | `"300m"` | limitCPU for pods |
-| frontend.resources.limitMemory | string | `"700Mi"` | limitMemory for pods |
-| frontend.resources.memory | string | `"512Mi"` | Memory for pods |
+| frontend.resources.cpu | string | `"100m"` | CPU for pods |
+| frontend.resources.limitCPU | string | `"200m"` | limitCPU for pods |
+| frontend.resources.limitMemory | string | `"256Mi"` | limitMemory for pods |
+| frontend.resources.memory | string | `"128Mi"` | Memory for pods |
 | frontend.targetPort | int | `3000` | Frontend external port |
 | host | string | `""` | External host to use for app |
 | imageRepository | string | `""` | GCR image repo to pull from for all deployments in this chart. Frontend and backend deployments can be overridden under their settings |
@@ -80,6 +82,19 @@ TODO for when we have more information on how tag will be passed in
 | test.name | string | `""` |  |
 
 ## Development
+
+### Installing Dependencies
+
+To run the charts, make documentation changes, and run testing locally, please install via hombrew and helm:
+
+```sh
+~ brew install helm
+~ helm plugin install https://github.com/helm-unittest/helm-unittest.git
+~ brew install norwoodj/tap/helm-docs
+```
+
+See [the helm docs](https://helm.sh/docs/intro/install/), [the helm-docs docs](https://github.com/norwoodj/helm-docs), and
+[helm-unittest docs](https://github.com/helm-unittest/helm-unittest) for more information or to install in other environments.
 
 ### Editing the README
 

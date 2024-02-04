@@ -1,0 +1,50 @@
+suite: test issuers deployment
+templates:
+  - charts/your-app/templates/app.yaml
+tests:
+  - it: should do basic template properly
+    documentIndex: 8 # find the deployment manifest, in this case its the 6th generated
+    asserts:
+      - isKind:
+          of: Issuer
+      - equal:
+          path: metadata.name
+          value: letsencrypt-staging
+  - it: should have correct labels
+    documentIndex: 8
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: "your-app"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/version"]
+          value: "1.16.0"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: "Helm"
+      - equal:
+          path: metadata.labels.app
+          value: "your-app"
+  - it: should do basic template properly
+    documentIndex: 9 # find the deployment manifest, in this case its the 6th generated
+    asserts:
+      - isKind:
+          of: Issuer
+      - equal:
+          path: metadata.name
+          value: letsencrypt-production
+  - it: should have correct labels
+    documentIndex: 9
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: "your-app"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/version"]
+          value: "1.16.0"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: "Helm"
+      - equal:
+          path: metadata.labels.app
+          value: "your-app"

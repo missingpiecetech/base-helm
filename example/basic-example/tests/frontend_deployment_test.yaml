@@ -1,0 +1,75 @@
+suite: test frontend deployment
+templates:
+  - charts/your-app/templates/app.yaml
+tests:
+  - it: should do basic template properly
+    documentIndex: 0 # find the deployment manifest, in this case its the 6th generated
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: your-app-frontend
+  - it: should have correct labels
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: "your-app"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/version"]
+          value: "1.16.0"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: "Helm"
+      - equal:
+          path: metadata.labels.app
+          value: "your-app"
+  - it: should have correct selector
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels.app
+          value: your-app-frontend
+  - it: should have correct service account
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: your-app
+  - it: should have correct container name
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: your-app-frontend
+  - it: should have correct image
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "gcr.io/basic-example/your-app-frontend:f3b1bc543d12984920c7644c1d64e0aa4b024de7"
+  - it: should have correct ports
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 80
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].protocol
+          value: TCP
+  - it: should have correct resources
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.memory
+          value: "128Mi"
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.cpu
+          value: "100m"
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.cpu
+          value: "200m"
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: "256Mi"

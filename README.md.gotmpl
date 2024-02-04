@@ -31,6 +31,19 @@ TODO for when we have more information on how tag will be passed in
 
 ## Development
 
+### Installing Dependencies
+
+To run the charts, make documentation changes, and run testing locally, please install via hombrew and helm:
+
+```sh
+~ brew install helm
+~ helm plugin install https://github.com/helm-unittest/helm-unittest.git
+~ brew install norwoodj/tap/helm-docs
+```
+
+See [the helm docs](https://helm.sh/docs/intro/install/), [the helm-docs docs](https://github.com/norwoodj/helm-docs), and
+[helm-unittest docs](https://github.com/helm-unittest/helm-unittest) for more information or to install in other environments.
+
 ### Editing the README
 
 Because we're using an automatic doc generator, you need to **update `README.md.gotmpl` not `README.md` directly!!**. This

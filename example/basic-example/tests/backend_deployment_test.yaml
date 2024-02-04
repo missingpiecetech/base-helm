@@ -1,0 +1,84 @@
+suite: test backend deployment
+templates:
+  - charts/your-app/templates/app.yaml
+tests:
+  - it: should do basic template properly
+    documentIndex: 2 # find the deployment manifest, in this case its the 6th generated
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: your-app-backend
+  - it: should have correct labels
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: "your-app"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/version"]
+          value: "1.16.0"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: "Helm"
+      - equal:
+          path: metadata.labels.app
+          value: "your-app"
+  - it: should have correct selector
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels.app
+          value: your-app-backend
+  - it: should have correct service account
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: your-app
+  - it: should have correct container name
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: your-app-backend
+  - it: should have correct image
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "gcr.io/basic-example/your-app-backend:f3b1bc543d12984920c7644c1d64e0aa4b024de7"
+  - it: should have correct ports
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 80
+  - it: should pull in ConfigMap properly
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[0].configMapRef.name
+          value: your-app
+  - it: should pull in Secret properly
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[1].secretRef.name
+          value: your-app-secret
+  - it: should have correct resources
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.memory
+          value: "512Mi"
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.cpu
+          value: "200m"
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.cpu
+          value: "300m"
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: "700Mi"

@@ -1,4 +1,4 @@
-basic-example:
+your-app:
   imageRepository: "gcr.io/basic-example"
   host: "app.basic-example.ai"
 
@@ -16,3 +16,4 @@ basic-example:
         value: "https://app.basic-example.ai/api"
       - name: "AUTH0_DOMAIN"
         value: "basic-example.us.auth0.com"
+    secret: "your-app-secret"

@@ -9,16 +9,16 @@ host: ""
 backend:
   # -- Turn this on to create a backend deployment resource. Most likely you want this ON
   enabled: true
-  # -- Can overwrite backend deployment name. Defaults to chart name
-  # @default -- `{{ .Chart.Name }}`
+  # -- Can overwrite backend deployment name. Defaults to chart name+ "-backend"
+  # @default -- `{{ .Chart.Name }}-backend`
   name: ""
   # -- Backend image port
   port: 80
   # -- Backend external port
   targetPort: 3001
   image:
-    # -- Can overwrite image name. Defaults to chart name
-    # @default -- `{{ .Chart.Name }}`
+    # -- Can overwrite image name. Defaults to chart name + "-backend"
+    # @default -- `{{ .Chart.Name }}-backend`
     name: ""
     # -- Can overwrite backend image repository. Defaults to .Values.imageRepository
     # @default -- `.Values.imageRepository`
@@ -38,16 +38,16 @@ backend:
 frontend:
   # -- Turn this on to create a frontend deployment resource
   enabled: true
-  # -- Can overwrite backend deployment name. Defaults to chart name
-  # @default -- `{{ .Chart.Name }}`
+  # -- Can overwrite backend deployment name. Defaults to chart name + "-frontend"
+  # @default -- `{{ .Chart.Name }}-frontend`
   name: ""
   # -- Frontend image port
   port: 80
   # -- Frontend external port
   targetPort: 3000
   image:
-    # -- Can overwrite image name. Defaults to chart name
-    # @default -- `{{ .Chart.Name }}`
+    # -- Can overwrite image name. Defaults to chart name + "-frontend"
+    # @default -- `{{ .Chart.Name }}-frontend`
     name: ""
     # -- Can overwrite frontend image repository. Defaults to .Values.imageRepository
     # @default -- `.Values.imageRepository`
@@ -56,13 +56,13 @@ frontend:
     tag: "latest"
   resources:
     # -- Memory for pods
-    memory: "512Mi"
+    memory: "128Mi"
     # -- CPU for pods
-    cpu: "200m"
+    cpu: "100m"
     # -- limitMemory for pods
-    limitMemory: "700Mi"
+    limitMemory: "256Mi"
     # -- limitCPU for pods
-    limitCPU: "300m"
+    limitCPU: "200m"
 
 serviceAccount:
   # -- Turn this on to create a serviceAccount resource. Most likely you want this ON
@@ -86,13 +86,26 @@ ingress:
   port: "80"
 
 database:
+  # -- Turn this on to create a database resource. Right now this will only be postgres
   enabled: true
+  # -- Can overwrite serviceAccount name. Defaults to chart name + "-db"
+  # @default -- `{{ .Chart.Name }}-db`
   name: ""
+  # -- Number of pod replicas
+  replicas: 1
+  # -- Port to expose. By default postgres uses 5432
   port: 5432
+  # -- Database storage
   storage: 20Gi
+  # -- Database memory
+  memory: 1Gi
+  # -- Username used to access the database
   user: "postgres"
   # TODO: We should probably grab this from a Secret
+  # -- Password used to access the database
   password: "postgres"
+  # -- Name of the database to be created
+  # @default -- `{{ .Chart.Name }}-db`
   database_name: ""
 
 # TODO: Will need to flesh this out later

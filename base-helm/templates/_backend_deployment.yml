@@ -21,8 +21,8 @@ spec:
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name | default .Chart.Name }}
       containers:
-        - name: {{ .Values.backend.image.name | default $name }}
-          image: "{{ .Values.backend.image.repository | default .Values.imageRepository }}/{{ .Values.backend.image.name | default $name }}-backend:{{ .Values.backend.image.tag }}"
+        - name: {{ $name }}
+          image: "{{ .Values.backend.image.repository | default .Values.imageRepository }}/{{ .Values.backend.image.name | default $name }}:{{ .Values.backend.image.tag }}"
           ports:
             - containerPort: {{ .Values.backend.port }}
           {{- if or .Values.environment.variables .Values.environment.secret }}

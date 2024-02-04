@@ -1,5 +1,5 @@
 {{- define "common.backendService" -}}
-{{- $name := .Values.backend.name | default .Chart.Name -}}
+{{- $name := .Values.backend.name | default (print .Chart.Name "-backend") -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -14,5 +14,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: {{ .Values.backend.name | default .Chart.Name }}
+    app: {{ .Values.backend.name | default $name }}
 {{- end -}}

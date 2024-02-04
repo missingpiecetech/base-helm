@@ -13,7 +13,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: influenx-frontend
+      app: {{ $name }}
   template:
     metadata:
       labels:
@@ -21,8 +21,8 @@ spec:
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name | default .Chart.Name }}
       containers:
-        - name: {{ .Values.frontend.name | default .Chart.Name }}
-          image: "{{ .Values.frontend.image.repository | default .Values.imageRepository }}/{{ .Values.frontend.image.name | default $name }}-frontend:{{ .Values.frontend.image.tag }}"
+        - name: {{ $name }}
+          image: "{{ .Values.frontend.image.repository | default .Values.imageRepository }}/{{ .Values.frontend.image.name | default $name }}:{{ .Values.frontend.image.tag }}"
           ports:
             - containerPort: 80
               protocol: TCP

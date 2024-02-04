@@ -1,0 +1,36 @@
+suite: test FrontendConfig
+templates:
+  - charts/your-app/templates/app.yaml
+tests:
+  - it: should do basic template properly
+    documentIndex: 5 # find the deployment manifest, in this case its the 6th generated
+    asserts:
+      - isKind:
+          of: FrontendConfig
+      - equal:
+          path: metadata.name
+          value: your-app-ssl-config
+  - it: should have correct labels
+    documentIndex: 5
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: "your-app"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/version"]
+          value: "1.16.0"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: "Helm"
+      - equal:
+          path: metadata.labels.app
+          value: "your-app"
+  - it: should have correct https redirect
+    documentIndex: 5
+    asserts:
+      - equal:
+          path: spec.redirectToHttps.enabled
+          value: true
+      - equal:
+          path: spec.redirectToHttps.responseCodeName
+          value: "MOVED_PERMANENTLY_DEFAULT"

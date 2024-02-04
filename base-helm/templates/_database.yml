@@ -1,9 +1,9 @@
 {{- define "common.database" -}}
-{{- $name := .Values.database.name | default .Chart.Name -}}
+{{- $name := .Values.database.name | default (print .Chart.Name "-db") -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ $name }}-db
+  name: {{ $name }}
   labels:
     {{- include "common.labels" . | nindent 4 }}
 spec:
@@ -18,33 +18,33 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $name }}-db
+  name: {{ $name }}
   labels:
     {{- include "common.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      app: {{ $name }}-db
-  replicas: 1
+      app: {{ $name }}
+  replicas: {{ .Values.database.replicas }}
   template:
     metadata:
       labels:
         {{- include "common.labels" . | nindent 8 }}
     spec:
       volumes:
-        - name: {{ $name }}-db
+        - name: {{ $name }}
           persistentVolumeClaim:
-            claimName: {{ $name }}-db
+            claimName: {{ $name }}
       containers:
-        - name: develop
+        - name: {{ $name }}
           image: postgres:latest
           ports:
-            - containerPort: 5432
+            - containerPort: {{ .Values.database.port }}
           resources:
             requests:
-              memory: "1Gi"
+              memory: {{ .Values.database.memory }}
           volumeMounts:
-            - name: {{ $name }}-db
+            - name: {{ $name }}
               mountPath: "/var/lib/postgresql/data"
           env:
           - name: POSTGRES_USER
@@ -58,14 +58,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $name }}-db
+  name: {{ $name }}
   labels:
     {{- include "common.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
-    - port: 5432
-      targetPort: 5432
+    - port: {{ .Values.database.port }}
+      targetPort: {{ .Values.database.port }}
   selector:
-    app: {{ $name }}-db
+    app: {{ $name }}
 {{- end -}}

@@ -4,6 +4,8 @@ apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: letsencrypt-staging
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
 spec:
   acme:
     server: https://acme-staging-v02.api.letsencrypt.org/directory
@@ -21,6 +23,8 @@ apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: letsencrypt-production
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory

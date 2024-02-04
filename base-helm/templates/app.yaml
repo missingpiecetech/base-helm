@@ -19,6 +19,10 @@
 {{ include "common.configmap" . }}
 ---
 {{- end }}
+{{- if .Values.ingress.enabled }}
+{{ include "common.ingress" . }}
+---
+{{- end }}
 {{- if .Values.serviceAccount.enabled }}
 {{ include "common.serviceAccount" . }}
 ---

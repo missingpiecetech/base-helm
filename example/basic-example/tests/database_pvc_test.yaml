@@ -1,0 +1,45 @@
+suite: test database PersistentVolumeClaim
+templates:
+  - charts/your-app/templates/app.yaml
+tests:
+  - it: should do basic template properly
+    documentIndex: 10 # find the deployment manifest, in this case its the 6th generated
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: metadata.name
+          value: your-app-db
+  - it: should have correct labels
+    documentIndex: 10
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: "your-app"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/version"]
+          value: "1.16.0"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: "Helm"
+      - equal:
+          path: metadata.labels.app
+          value: "your-app"
+  - it: should have correct storage class
+    documentIndex: 10
+    asserts:
+      - equal:
+          path: spec.storageClassName
+          value: "standard-rwo"
+  - it: should have correct access mode
+    documentIndex: 10
+    asserts:
+      - equal:
+          path: spec.accessModes[0]
+          value: "ReadWriteOnce"
+  - it: should have correct storage
+    documentIndex: 10
+    asserts:
+      - equal:
+          path: spec.resources.requests.storage
+          value: "20Gi"

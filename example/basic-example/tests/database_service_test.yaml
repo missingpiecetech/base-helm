@@ -1,0 +1,27 @@
+suite: test database service
+templates:
+  - charts/your-app/templates/app.yaml
+tests:
+  - it: should do basic template properly
+    documentIndex: 12 # find the deployment manifest, in this case its the 6th generated
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: metadata.name
+          value: your-app-db
+  - it: should have correct labels
+    documentIndex: 12
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: "your-app"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/version"]
+          value: "1.16.0"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: "Helm"
+      - equal:
+          path: metadata.labels.app
+          value: "your-app"
