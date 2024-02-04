@@ -9,7 +9,8 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v3
       - name: Install helm-unittest
-        uses: helm plugin install https://github.com/helm-unittest/helm-unittest.git
+        run: |
+          helm plugin install https://github.com/helm-unittest/helm-unittest.git
       - name: test charts
         run: |
           make test
