@@ -1,0 +1,28 @@
+name: Testing
+
+on: [pull_request]
+
+jobs:
+  chart-example-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test charts
+        run: |
+          make test
+  test-docs:
+    runs-on: ubuntu-latest
+    container:
+      image: jnorwood/helm-docs:latest
+    steps:
+      - name: install helm-docs
+        run: |
+          helm-docs -c ${CI_PROJECT_DIR}/helm-charts/common -o ../../README_TEST.md --template-files=../../README.md.gotmpl
+      - name: create docs
+        run: |
+          helm-docs -c ${CI_PROJECT_DIR}/helm-charts/common -o ../../README_TEST.md --template-files=../../README.md.gotmpl
+      - name: check there is no diff
+        run: |
+          if ! diff -q ${CI_PROJECT_DIR}/README_TEST.md ${CI_PROJECT_DIR}/README.md &>/dev/null; then \
+            echo "Looks like README.md hasn't been updated. Please run 'make docs' locally to update documentation" && \
+            exit 1; 
+          fi
