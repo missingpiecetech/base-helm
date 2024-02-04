@@ -14,7 +14,9 @@ TODO for when we figure out how to do this with github
 
 Information on more complex usage scenarios. For filling out values, see README below.
 
-### Making Multi Charts with Alias
+### Templating
+
+To template and test the output of the app, try build one of the example apps. For now, we have `make template-basic-example`.
 
 ### What is `.Chart.Name`?
 
@@ -23,11 +25,7 @@ as a default in the values that just means we're grabbing the chart name using [
 
 ### Setting the Image Tag
 
-If you are deploying your app to a development namespace, argo will automatically update your image tag to `:master-$SHA`.
-If you are in a non development repo, we usually cut a tag and set it explicitly in argo, so argo will use `:$TAG`.
-
-This is all done by setting `.Values.global.imageTag`. If you DO NOT want this to happen, simply set the tag explicitly
-in `.Values.serviceContainer.image.tag`, however it is not recommended.
+TODO for when we have more information on how tag will be passed in
 
 {{ template "chart.valuesSection" . }}
 
@@ -47,11 +45,8 @@ goes as expect pre-commit will automatically fix the docs for you before commit.
 
 ### Testing
 
-We use [helm unittest] to test the common chart. Right now there are two test charts that both live in the `example` dir:
-`single-chart-example` and `multi-chart-example`. All tests are found under `tests`.
-
-The single chart is for testing simple, default charts used by ML or quick charts for other use cases. The multi chart
-tests are for testing complicated setups like those in p21-embedded, eu, va-lexi, etc.
+We use [helm unittest] to test the common chart. Right now there is just one test charts that lives in the `example` dir:
+`basic-example`. All tests are found under `tests` within this chart.
 
 For documentation on testing see the [unittest documentation here](https://github.com/helm-unittest/helm-unittest/blob/main/DOCUMENT.md).
 
