@@ -1,7 +1,9 @@
+{{- if .Values.test.enabled -}}
+{{- $name := .Values.test.name | default .Chart.Name }}
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "base-helm.fullname" . }}-test-connection"
+  name: "{{ $name }}-test-connection"
   labels:
     {{- include "common.labels" . | nindent 4 }}
   annotations:
@@ -11,5 +13,6 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "base-helm.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ .Values.frontend.name | default (print .Chart.Name "-frontend") }}:{{ .Values.frontend.port }}']
   restartPolicy: Never
+{{- end }}

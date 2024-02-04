@@ -13,7 +13,7 @@ spec:
     solvers:
       - http01:
           ingress:
-            name: influenx-frontend-ingress
+            name: {{ .Values.ingress.name | default .Chart.Name }}
 
 ---
 # issuer-lets-encrypt-production.yaml
@@ -30,5 +30,5 @@ spec:
     solvers:
       - http01:
           ingress:
-            name: influenx-frontend-ingress
+            name: {{ .Values.ingress.name | default .Chart.Name }}
 {{- end -}}

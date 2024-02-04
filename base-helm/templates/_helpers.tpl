@@ -2,19 +2,39 @@
 Common labels
 */}}
 {{- define "common.labels" -}}
-helm.sh/chart: {{ include "base-helm.chart" . }}
-{{ include "base-helm.selectorLabels" . }}
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-app: {{ include "base-helm.fullname" . }}
+app: {{ .Chart.Name }}
 {{- end }}
 
 {{/*
-Selector labels
+Common environment variables
 */}}
-{{- define "base-helm.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "base-helm.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+{{- define "common.envVars" -}}
+- name: "CLIENT_ORIGIN_URL"
+  value: "{{ .Values.host }}"
+- name: "ALLOWED_CORS_ORIGIN"
+  value: "https://{{ .Values.host }}"
+{{- if .Values.backend.enabled }}
+- name: "BACKEND_ORIGIN_URL"
+  value: "{{ .Values.host }}/api"
+- name: "API_ENDPOINT_PORT"
+  value: "{{ .Values.backend.port }}"
+{{- end -}}
+{{- if .Values.database.enabled }}
+- name: "POSTGRES_HOSTNAME"
+  value: {{ .Values.database.name | default .Chart.Name }}
+- name: "POSTGRES_PORT"
+  value: {{ .Values.database.port }}
+- name: "POSTGRES_USER"
+  value: {{ .Values.database.user }}
+- name: "POSTGRES_PASSWORD"
+  value: {{ .Values.database.password }}
+- name: "POSTGRES_DB_NAME"
+  value: {{ .Values.database.password }}
+{{- end -}}
 {{- end }}

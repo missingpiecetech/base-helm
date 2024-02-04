@@ -9,7 +9,7 @@ backend:
   image:
     name: ""
     repository: ""
-    tag: ""
+    tag: "latest"
   resources:
     # -- Memory for pods
     memory: "512Mi"
@@ -28,7 +28,7 @@ frontend:
   image:
     name: ""
     repository: ""
-    tag: ""
+    tag: "latest"
   resources:
     # -- Memory for pods
     memory: "512Mi"
@@ -48,6 +48,7 @@ serviceAccount:
 
 ingress:
   enabled: true
+  name: ""
   service: ""
   port: ""
 
@@ -56,8 +57,10 @@ database:
   name: ""
   port: 5432
   storage: 20Gi
-  host: ""
   user: "postgres"
+  # TODO: We should probably grab this from a Secret
+  password: "postgres"
+  database_name: ""
 
 certManager:
   enabled: true
@@ -67,17 +70,20 @@ environment:
   # Example of use
   #    - name: REPLAY_OPENSEARCH_ADDR
   #      value: "foobar"
-  # -- List of secrets you want to inject into the deployment directly instead of through a secret. Requires a name and from.
-  # Name is the name of the environment variable, from is the secret to use. From defaults to `{{ .Secret.name }}`
-  secrets: []
-  #    - name: REPLAY_OPENSEARCH_ADDR
-  #      from: Secret
-  #      optional: "" # Defaults to false
+  # -- Set this to pull in a Secret to the deployment
+  secret: ""
 
+# TODO: Will need to flesh this out later
 autoscaling:
   enabled: false
+  hpaName: ""
   replicaCount: 1
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
+
+# TODO: Will need to flesh this out later
+test:
+  enabled: false
+  name: ""

@@ -1,0 +1,4 @@
+# We can overwrite values for dev here
+basic-example:
+  imageRepository: "gcr.io/basic-example-dev"
+  host: "app.dev.basic-example.ai"

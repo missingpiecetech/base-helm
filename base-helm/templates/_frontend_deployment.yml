@@ -1,12 +1,12 @@
 {{- define "common.frontendDeployment" -}}
-{{- if not or (.Values.imageRepository .Values.frontend.image.repository) -}}
+{{- if not (or .Values.imageRepository .Values.frontend.image.repository) -}}
 {{- fail ".Values.imageRepository or .Values.frontend.image.repository must be defined" -}}
 {{- end -}}
-{{- $name := .Values.frontend.name | default .Chart.Name -}}
+{{- $name := .Values.frontend.name | default (print .Chart.Name "-frontend") -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "base-helm.fullname" . }}
+  name: {{ $name }}
   labels:
     {{- include "common.labels" . | nindent 4 }}
 spec:
@@ -22,7 +22,7 @@ spec:
       serviceAccountName: {{ .Values.serviceAccount.name | default .Chart.Name }}
       containers:
         - name: {{ .Values.frontend.name | default .Chart.Name }}
-          image: "gcr.io/influenx-ai-development/influenx-frontend:f3b1bc543d12984920c7644c1d64e0aa4b024de7"
+          image: "{{ .Values.frontend.image.repository | default .Values.imageRepository }}/{{ .Values.frontend.image.name | default $name }}-frontend:{{ .Values.frontend.image.tag }}"
           ports:
             - containerPort: 80
               protocol: TCP
