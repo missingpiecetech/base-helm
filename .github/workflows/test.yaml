@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: create docs
         run: |
-          helm-docs -c ./base-helm -o ./README_TEST.md --template-files=./README.md.gotmp
+          helm-docs -c ./base-helm -o ../README_TEST.md --template-files=../README.md.gotmpl
       - name: Show files changed
         run: cat ./README_TEST.md
       - name: check there is no diff
